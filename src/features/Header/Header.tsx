@@ -1,0 +1,94 @@
+import React from 'react';
+
+import {
+   AppBar,
+   Button,
+   createStyles,
+   IconButton,
+   LinearProgress,
+   makeStyles,
+   Theme,
+   Toolbar,
+   Typography
+} from '@material-ui/core';
+import {ThemeProvider} from '@material-ui/core/styles';
+import {theme} from '../../utils/theme';
+import {ErrorSnackbar} from '../../components/ErrorSnackbar/ErrorSnackbar';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppRootStateType} from '../../app/store';
+import {RequestStatusType} from '../../app/appReducer';
+import {PATH} from '../Routes/Routes';
+import {logout} from '../SignIn/authReducer';
+import {NavLink} from 'react-router-dom';
+import {history} from '../../index';
+
+
+const useStyles = makeStyles((theme: Theme) =>
+   createStyles({
+      root: {
+         flexGrow: 1,
+      },
+      logo: {
+         marginRight: theme.spacing(3),
+      },
+      links: {
+         flexGrow: 1,
+      },
+      navLink: {
+         color: 'white',
+         textDecoration: 'none',
+         paddingLeft: '15px'
+      },
+      selectedLink: {
+         color: '#4caf50   '
+      }
+   }),
+);
+
+
+export const Header: React.FC = () => {
+   console.log('Header component')
+   const classes = useStyles();
+
+   const dispatch = useDispatch();
+   const status = useSelector<AppRootStateType, RequestStatusType>(state => state.app.status);
+   const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn);
+
+   const handlerLogin = () => {
+      history.push(PATH.SIGN_IN_PATH);
+
+   }
+
+   const handleLogout = () => {
+      dispatch(logout());
+   }
+
+   return (
+      <ThemeProvider theme={theme}>
+         <ErrorSnackbar/>
+         <div className={classes.root}>
+            <AppBar position="static" color={'primary'}>
+               <Toolbar>
+                  <IconButton edge="start" className={classes.logo} color="inherit" aria-label="logo">
+                     CARDS
+                  </IconButton>
+                  <Typography variant="h6" className={classes.links}>
+                     <NavLink activeClassName={classes.selectedLink} to={PATH.PROFILE_PATH}
+                              className={classes.navLink}>Profile</NavLink>
+
+                     <NavLink activeClassName={classes.selectedLink} to={'dfdf'}
+                              className={classes.navLink}>News</NavLink>
+                  </Typography>
+                  <Typography variant="h6">
+
+                  </Typography>
+                  {!isLoggedIn && <Button color="inherit" onClick={handlerLogin}>Login</Button>}
+                  {isLoggedIn && <Button color="inherit" onClick={handleLogout}>Logout</Button>}
+               </Toolbar>
+            </AppBar>
+         </div>
+         {status === 'loading' && <LinearProgress/>}
+      </ThemeProvider>
+   );
+};
+
