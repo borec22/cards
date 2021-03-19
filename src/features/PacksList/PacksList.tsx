@@ -1,13 +1,27 @@
-import {InputAdornment, makeStyles, Paper, TableBody, TableCell, TableRow, TextField, Toolbar} from '@material-ui/core';
+import {
+   Button,
+   InputAdornment,
+   makeStyles,
+   Paper,
+   TableBody,
+   TableCell,
+   TableRow,
+   TextField,
+   Toolbar
+} from '@material-ui/core';
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppRootStateType} from '../../app/store';
 import {Redirect} from 'react-router-dom';
 import {PATH} from '../main/m3-Routes/Routes';
-import {getCardPacks} from './packsReducer';
+import {addCardPack, deleteCardPack, getCardPacks, updateCardPack} from './packsReducer';
 import {useTable} from '../../components/useTable/useTable';
 import {PackType} from '../../api/api';
 import {Search} from '@material-ui/icons';
+import AddIcon from '@material-ui/icons/Add'
+import {ActionButton} from '../../components/ActionButton/ActionButton';
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles(theme => ({
    pageContent: {
@@ -16,6 +30,10 @@ const useStyles = makeStyles(theme => ({
    },
    searchInput: {
       width: '75%'
+   },
+   addButton: {
+      position: 'absolute',
+      right: '10px'
    }
 }));
 
@@ -31,6 +49,7 @@ const headCells: HeadCell[] = [
    {id: 'cardsCount', label: 'Count Of Cards'},
    {id: 'updated', label: 'Date Of Updated'},
    {id: 'deckCover', label: 'Image', isDisableSorting: true},
+   {id: 'action', label: 'Action', isDisableSorting: true},
 ]
 
 
@@ -64,9 +83,21 @@ export const PacksList = () => {
                return items;
             }
 
-            return items.filter(item => item.name.toLowerCase().includes(target.value));
+            return items.filter(item => item.name.toLowerCase().startsWith(target.value));
          }
       });
+   }
+
+   const addNewItemHandler = () => {
+      dispatch(addCardPack());
+   }
+
+   const editItemHandler = (item: PackType) => {
+      dispatch(updateCardPack(item._id));
+   }
+
+   const deleteItemHandler = (item: PackType) => {
+      dispatch(deleteCardPack(item._id));
    }
 
    return (
@@ -80,10 +111,16 @@ export const PacksList = () => {
                           InputProps={{
                              startAdornment: (
                                 <InputAdornment position="start">
-                                   <Search />
+                                   <Search/>
                                 </InputAdornment>
                              ),
                           }}/>
+               <Button variant='outlined'
+                       startIcon={<AddIcon/>}
+                       color={'secondary'}
+                       className={classes.addButton}
+                       onClick={addNewItemHandler}
+               > Add New </Button>
             </Toolbar>
             <TblContainer>
                <TblHead/>
@@ -95,6 +132,17 @@ export const PacksList = () => {
                            <TableCell>{item.cardsCount}</TableCell>
                            <TableCell>{item.updated}</TableCell>
                            <TableCell>{item.deckCover}</TableCell>
+                           <TableCell>
+                              <ActionButton color={'primary'}
+                                            onClick={() => editItemHandler(item)}>
+                                 <EditOutlinedIcon fontSize="small"/>
+                              </ActionButton>
+                              <ActionButton
+                                 color="secondary"
+                                 onClick={() => deleteItemHandler(item)}>
+                                 <CloseIcon fontSize="small" />
+                              </ActionButton>
+                           </TableCell>
                         </TableRow>)
                      )
                   }

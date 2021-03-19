@@ -46,6 +46,48 @@ export const getCardPacks = (): ThunkAction<Return, AppRootStateType, ExtraArgum
       }
    }
 
+export const addCardPack = (): ThunkAction<Return, AppRootStateType, ExtraArgument, PacksActions> =>
+   async (dispatch) => {
+      try {
+         dispatch(setAppStatus('loading'));
+
+         const data = await packsApi.createPack();
+
+         dispatch(getCardPacks());
+         dispatch(setAppStatus('succeeded'));
+      } catch (e) {
+         handleError(e, dispatch);
+      }
+   }
+
+export const updateCardPack = (id: string, name: string = 'update pack'): ThunkAction<Return, AppRootStateType, ExtraArgument, PacksActions> =>
+   async (dispatch) => {
+      try {
+         dispatch(setAppStatus('loading'));
+
+         const data = await packsApi.updatePack(id, name);
+
+         dispatch(getCardPacks());
+         dispatch(setAppStatus('succeeded'));
+      } catch (e) {
+         handleError(e, dispatch);
+      }
+   }
+
+export const deleteCardPack = (id: string): ThunkAction<Return, AppRootStateType, ExtraArgument, PacksActions> =>
+   async (dispatch) => {
+      try {
+         dispatch(setAppStatus('loading'));
+
+         const data = await packsApi.deletePack(id);
+
+         dispatch(getCardPacks());
+         dispatch(setAppStatus('succeeded'));
+      } catch (e) {
+         handleError(e, dispatch);
+      }
+   }
+
 
 // types
 type Return = void;

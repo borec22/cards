@@ -65,7 +65,7 @@ export const packsApi = {
    createPack() {
       return instance.post<ResponseCreatePackType>('cards/pack', {
          cardsPack: {
-            name: 'noName',
+            name: 'new pack added',
             path: '',
             private: false,
             deckCover: '',
