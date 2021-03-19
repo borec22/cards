@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {makeStyles, Table, TableCell, TableHead, TablePagination, TableRow, TableSortLabel} from '@material-ui/core';
-import {PackType} from '../../api/api';
+import {CardType, PackType} from '../../api/api';
 import {HeadCell} from '../../features/PacksList/PacksList';
 
 const useStyles = makeStyles(theme => ({

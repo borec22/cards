@@ -55,7 +55,6 @@ export const Header: React.FC = () => {
 
    const handlerLogin = () => {
       history.push(PATH.SIGN_IN_PATH);
-
    }
 
    const handleLogout = async () => {

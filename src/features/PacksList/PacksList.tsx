@@ -22,6 +22,9 @@ import AddIcon from '@material-ui/icons/Add'
 import {ActionButton} from '../../components/ActionButton/ActionButton';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import CloseIcon from '@material-ui/icons/Close';
+import {RequestStatusType} from '../../app/appReducer';
+import {history} from '../../index';
+
 
 const useStyles = makeStyles(theme => ({
    pageContent: {
@@ -50,6 +53,7 @@ const headCells: HeadCell[] = [
    {id: 'updated', label: 'Date Of Updated'},
    {id: 'deckCover', label: 'Image', isDisableSorting: true},
    {id: 'action', label: 'Action', isDisableSorting: true},
+   {id: 'cards', label: 'Cards', isDisableSorting: true},
 ]
 
 
@@ -61,6 +65,8 @@ export const PacksList = () => {
 
    const dispatch = useDispatch();
    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn);
+   const status = useSelector<AppRootStateType, RequestStatusType>(state => state.app.status);
+
    const records = useSelector<AppRootStateType, PackType[]>(state => state.packs.cardPacks);
 
    const {TblContainer, TblHead, TblPaginator, recordsAfterPagingAndSorting} = useTable(records, headCells, searchFn);
@@ -100,6 +106,10 @@ export const PacksList = () => {
       dispatch(deleteCardPack(item._id));
    }
 
+   const handleCardsClick = (item: PackType) => {
+      history.push(`${PATH.CARDS_PATH}/${item._id}`);
+   }
+
    return (
       <>
          <Paper className={classes.pageContent}>
@@ -117,6 +127,7 @@ export const PacksList = () => {
                           }}/>
                <Button variant='outlined'
                        startIcon={<AddIcon/>}
+                       disabled={status === 'loading'}
                        color={'secondary'}
                        className={classes.addButton}
                        onClick={addNewItemHandler}
@@ -134,14 +145,27 @@ export const PacksList = () => {
                            <TableCell>{item.deckCover}</TableCell>
                            <TableCell>
                               <ActionButton color={'primary'}
-                                            onClick={() => editItemHandler(item)}>
+                                            onClick={() => editItemHandler(item)}
+                                            disabled={status === 'loading'}
+                              >
                                  <EditOutlinedIcon fontSize="small"/>
                               </ActionButton>
                               <ActionButton
                                  color="secondary"
-                                 onClick={() => deleteItemHandler(item)}>
+                                 onClick={() => deleteItemHandler(item)}
+                                 disabled={status === 'loading'}
+                              >
                                  <CloseIcon fontSize="small" />
                               </ActionButton>
+                           </TableCell>
+                           <TableCell>
+                              <Button
+                                 variant='outlined'
+                                 color='secondary'
+                                 onClick={() => handleCardsClick(item)}
+                              >
+                                 Cards
+                              </Button>
                            </TableCell>
                         </TableRow>)
                      )

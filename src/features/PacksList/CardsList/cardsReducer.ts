@@ -1,17 +1,24 @@
 import {AppRootStateType} from '../../../app/store';
+import {cardsApi, CardType} from '../../../api/api';
+import {ThunkAction} from 'redux-thunk';
+import {SetAppErrorActionType, setAppStatus, SetAppStatusActionType} from '../../../app/appReducer';
+import {handleError} from '../../../utils/error-utils';
 
 
 enum CARDS_ACTIONS_TYPE {
-   SET_IS_LOGGED_IN = 'AUTH/SET-IS-LOGGED-IN',
+   SET_CARDS = 'CARDS/SET-CARDS',
 }
 
 const initialState = {
-
+   cards: [] as CardType[]
 }
 
 
-export const cardsReducer = (state = initialState, action: any): CardsInitialStateType => {
+export const cardsReducer = (state = initialState, action: CardsActions): CardsInitialStateType => {
    switch (action.type) {
+      case CARDS_ACTIONS_TYPE.SET_CARDS: {
+         return {...state, ...action.payload}
+      }
 
       default:
          return state
@@ -20,25 +27,24 @@ export const cardsReducer = (state = initialState, action: any): CardsInitialSta
 
 
 // actions
-/*export const setIsLoggedIn = (isLoggedIn: boolean) =>
-   ({type: AUTH_ACTIONS_TYPE.SET_IS_LOGGED_IN, payload: {isLoggedIn}} as const)*/
+export const setCards = (cards: CardType[]) =>
+   ({type: CARDS_ACTIONS_TYPE.SET_CARDS, payload: {cards}} as const)
 
 
 // thunks
-/*export const login = (data: LoginParamsType): ThunkAction<Return, AppRootStateType, ExtraArgument, AuthActions> =>
+export const getCards = (cardsPack_id: string): ThunkAction<Return, AppRootStateType, ExtraArgument, CardsActions> =>
    async (dispatch) => {
       try {
          dispatch(setAppStatus('loading'));
 
-         const responseData = await authAPI.login(data);
+         const data = await cardsApi.getCards(cardsPack_id);
 
-         dispatch(setUserData(responseData));
-         dispatch(setIsLoggedIn(true));
+         dispatch(setCards(data.cards));
          dispatch(setAppStatus('succeeded'));
       } catch (e) {
          handleError(e, dispatch);
       }
-   }*/
+   }
 
 
 // types
@@ -48,6 +54,9 @@ type IGetState = () => AppRootStateType;
 
 export type CardsInitialStateType = typeof initialState
 
-type CardsActions = null
+type CardsActions =
+   | ReturnType<typeof setCards>
+   | SetAppStatusActionType
+   | SetAppErrorActionType
 
 

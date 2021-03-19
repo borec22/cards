@@ -5,6 +5,7 @@ type ActionButtonProps = {
    color: string
    children: React.ReactNode
    onClick: any
+   disabled?: boolean
 }
 
 const useStyles = makeStyles(theme => ({
@@ -27,13 +28,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const ActionButton: React.FC<ActionButtonProps> = (props) => {
-   const {color, children, onClick} = props;
+   const {color, children, onClick, disabled = false, ...other} = props;
    const classes = useStyles();
 
    return (
       <Button
          className={`${classes.root} ${Object(classes)[color]}`}
          onClick={onClick}
+         disabled={disabled}
+         {...other}
       >
          {children}
       </Button>

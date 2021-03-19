@@ -33,7 +33,8 @@ export const Routes: React.FC = () => {
             <Route path={PATH.FORGOT_PATH} render={() => <ForgotPassword/>}/>
             <Route path={PATH.SET_NEW_PASSWORD_PATH} render={() => <RecoveryPassword/>}/>
             <Route path={PATH.PACKS_PATH} render={() => <PacksList/>}/>
-            <Route path={PATH.CARDS_PATH} render={() => <CardsList/>}/>
+            <Route exact path={PATH.CARDS_PATH} render={() => <CardsList/>}/>
+            <Route path={'/cards/:id?'} render={() => <CardsList/>}/>
 
             {/*<Route path={STAND_PATH} render={() => <DemoSuperComponentsStand/>}/>*/}
          </Switch>

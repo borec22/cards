@@ -48,7 +48,7 @@ export const packsApi = {
    getPacks() {
       return instance.get<ResponseGetPacksType>('cards/pack', {
          params: {
-            pageCount: 1000
+            pageCount: 26
          }
       })
          .then(response => response.data);
