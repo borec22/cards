@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import './App.css';
-import {Main} from '../features/Main/Main';
 
 import {useDispatch, useSelector} from 'react-redux';
 import {AppRootStateType} from './store';
@@ -8,6 +7,7 @@ import {initializeApp} from './appReducer';
 import {CircularProgress} from '@material-ui/core';
 import {theme} from '../utils/theme';
 import {ThemeProvider} from '@material-ui/core/styles';
+import {Main} from '../features/main/m2-Main/Main';
 
 
 function App() {

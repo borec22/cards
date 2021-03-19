@@ -1,8 +1,8 @@
-import {SignIn} from '../SignIn/SignIn';
+import {SignIn} from '../authorization/a1-SignIn/SignIn';
 import {Profile} from './Profile';
 import {useSelector} from 'react-redux';
 import {AppRootStateType} from '../../app/store';
-import {AuthInitialStateType, UserType} from '../SignIn/authReducer';
+import {AuthInitialStateType, UserType} from '../authorization/a1-SignIn/authReducer';
 
 export const ProfileContainer = () => {
    const {

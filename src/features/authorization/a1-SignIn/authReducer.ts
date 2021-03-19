@@ -1,8 +1,8 @@
-import {authAPI, LoginParamsType, ResponseLoginMeType} from '../../api/api';
+import {authAPI, LoginParamsType, ResponseLoginMeType} from '../../../api/api';
 import {ThunkAction} from 'redux-thunk';
-import {AppRootStateType} from '../../app/store';
-import {SetAppErrorActionType, setAppStatus, SetAppStatusActionType} from '../../app/appReducer';
-import {handleError} from '../../utils/error-utils';
+import {AppRootStateType} from '../../../app/store';
+import {SetAppErrorActionType, setAppStatus, SetAppStatusActionType} from '../../../app/appReducer';
+import {handleError} from '../../../utils/error-utils';
 
 enum AUTH_ACTIONS_TYPE {
    SET_IS_LOGGED_IN = 'AUTH/SET-IS-LOGGED-IN',

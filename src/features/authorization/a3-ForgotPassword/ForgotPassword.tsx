@@ -1,14 +1,14 @@
 import {useDispatch, useSelector} from 'react-redux';
-import {AppRootStateType} from '../../app/store';
+import {AppRootStateType} from '../../../app/store';
 import React, {useEffect} from 'react';
-import {forgotPassword, register, setIsRegisteredSuccess} from '../SignIn/authReducer';
+import {forgotPassword, register, setIsRegisteredSuccess} from '../a1-SignIn/authReducer';
 import {useFormik} from 'formik';
-import {ForgotPasswordSchema, SignUpSchema} from '../../utils/validators';
-import {RequestStatusType, setAppError, setAppStatus} from '../../app/appReducer';
+import {ForgotPasswordSchema, SignUpSchema} from '../../../utils/validators';
+import {RequestStatusType, setAppError, setAppStatus} from '../../../app/appReducer';
 import {NavLink, Redirect} from 'react-router-dom';
-import {PATH} from '../Routes/Routes';
+import {PATH} from '../../main/m3-Routes/Routes';
 import {ThemeProvider} from '@material-ui/core/styles';
-import {theme} from '../../utils/theme';
+import {theme} from '../../../utils/theme';
 import {Box, Button, FormControl, FormGroup, FormLabel, Grid, TextField} from '@material-ui/core';
 
 type PropsType = {}
@@ -23,9 +23,9 @@ export const ForgotPassword: React.FC<PropsType> = React.memo((props) => {
          email: '',
       },
       validationSchema: ForgotPasswordSchema,
-      onSubmit: ({email}) => {
-         //alert(JSON.stringify(values, null, 2));
-         dispatch(forgotPassword(email));
+      onSubmit: async (values, {setSubmitting}) => {
+         await dispatch(forgotPassword(values.email));
+         setSubmitting(false);
       },
    });
 
@@ -54,7 +54,13 @@ export const ForgotPassword: React.FC<PropsType> = React.memo((props) => {
                            {formik.touched && formik.errors.email &&
                            <div style={{color: 'red'}}>{formik.errors.email}</div>}
 
-                           <Button type={'submit'} variant={'contained'} color={'secondary'} style={{marginTop: '20px'}}>Send</Button>
+                           <Button type={'submit'}
+                                   variant={'contained'}
+                                   color={'secondary'}
+                                   style={{marginTop: '20px'}}
+                                   disabled={!formik.isValid || formik.isSubmitting}>
+                              Send
+                           </Button>
 
                            <FormLabel>
                               <Box mt={5}>

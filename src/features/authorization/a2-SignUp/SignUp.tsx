@@ -1,15 +1,15 @@
-import {theme} from '../../utils/theme';
+import {theme} from '../../../utils/theme';
 import {Box, Button, FormControl, FormGroup, FormLabel, Grid, TextField} from '@material-ui/core';
 import {NavLink, Redirect} from 'react-router-dom';
-import {PATH} from '../Routes/Routes';
+import {PATH} from '../../main/m3-Routes/Routes';
 import {ThemeProvider} from '@material-ui/core/styles';
 import React, {useEffect} from 'react';
 import {useFormik} from 'formik';
 import {useDispatch, useSelector} from 'react-redux';
-import {SignUpSchema} from '../../utils/validators';
-import {setAppError} from '../../app/appReducer';
-import {AppRootStateType} from '../../app/store';
-import {register, setIsRegisteredSuccess} from '../SignIn/authReducer';
+import {SignUpSchema} from '../../../utils/validators';
+import {setAppError} from '../../../app/appReducer';
+import {AppRootStateType} from '../../../app/store';
+import {register, setIsRegisteredSuccess} from '../a1-SignIn/authReducer';
 
 export const SignUp = () => {
    const dispatch = useDispatch();
@@ -28,12 +28,13 @@ export const SignUp = () => {
          secondPassword: ''
       },
       validationSchema: SignUpSchema,
-      onSubmit: values => {
+      onSubmit: async (values, {setSubmitting}) => {
          if (values.firstPassword !== values.secondPassword) {
             dispatch(setAppError('Passwords don\'t match!'))
          } else {
             // alert(JSON.stringify(values, null, 2));
-            dispatch(register(values.email, values.firstPassword));
+            await dispatch(register(values.email, values.firstPassword));
+            setSubmitting(false);
          }
       },
    });
@@ -76,7 +77,13 @@ export const SignUp = () => {
                         />
                         {formik.touched.secondPassword && formik.errors.secondPassword && <div style={{color: 'red'}}>{formik.errors.secondPassword}</div>}
 
-                        <Button type={'submit'} variant={'contained'} color={'secondary'} style={{marginTop: '20px'}}>Sign Up</Button>
+                        <Button type={'submit'}
+                                variant={'contained'}
+                                color={'secondary'}
+                                style={{marginTop: '20px'}}
+                                disabled={!formik.isValid || formik.isSubmitting}>
+                           Sign Up
+                        </Button>
 
                         <FormLabel >
                            <Box mt={5}>

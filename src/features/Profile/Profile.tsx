@@ -1,8 +1,8 @@
 import {Redirect} from 'react-router-dom';
-import {PATH} from '../Routes/Routes';
+import {PATH} from '../main/m3-Routes/Routes';
 import {Box, Grid} from '@material-ui/core';
 import React from 'react';
-import {UserType} from '../SignIn/authReducer';
+import {UserType} from '../authorization/a1-SignIn/authReducer';
 import defaultPhoto from '../../assets/images/avatar-default.png';
 
 type PropsType = {

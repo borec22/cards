@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import {
    AppBar,
@@ -11,16 +11,14 @@ import {
    Toolbar,
    Typography
 } from '@material-ui/core';
-import {ThemeProvider} from '@material-ui/core/styles';
-import {theme} from '../../utils/theme';
-import {ErrorSnackbar} from '../../components/ErrorSnackbar/ErrorSnackbar';
+import {ErrorSnackbar} from '../../../components/ErrorSnackbar/ErrorSnackbar';
 import {useDispatch, useSelector} from 'react-redux';
-import {AppRootStateType} from '../../app/store';
-import {RequestStatusType} from '../../app/appReducer';
-import {PATH} from '../Routes/Routes';
-import {logout} from '../SignIn/authReducer';
+import {AppRootStateType} from '../../../app/store';
+import {RequestStatusType} from '../../../app/appReducer';
+import {PATH} from '../m3-Routes/Routes';
+import {logout} from '../../authorization/a1-SignIn/authReducer';
 import {NavLink} from 'react-router-dom';
-import {history} from '../../index';
+import {history} from '../../../index';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -47,8 +45,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 export const Header: React.FC = () => {
-   console.log('Header component')
+   console.log('m1-Header component')
    const classes = useStyles();
+   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
    const dispatch = useDispatch();
    const status = useSelector<AppRootStateType, RequestStatusType>(state => state.app.status);
@@ -59,12 +58,14 @@ export const Header: React.FC = () => {
 
    }
 
-   const handleLogout = () => {
-      dispatch(logout());
+   const handleLogout = async () => {
+      setIsSubmitting(true);
+      await dispatch(logout());
+      setIsSubmitting(false);
    }
 
    return (
-      <ThemeProvider theme={theme}>
+      <>
          <ErrorSnackbar/>
          <div className={classes.root}>
             <AppBar position="static" color={'primary'}>
@@ -76,19 +77,19 @@ export const Header: React.FC = () => {
                      <NavLink activeClassName={classes.selectedLink} to={PATH.PROFILE_PATH}
                               className={classes.navLink}>Profile</NavLink>
 
-                     <NavLink activeClassName={classes.selectedLink} to={'dfdf'}
-                              className={classes.navLink}>News</NavLink>
+                     <NavLink activeClassName={classes.selectedLink} to={PATH.PACKS_PATH}
+                              className={classes.navLink}>Packs</NavLink>
                   </Typography>
                   <Typography variant="h6">
 
                   </Typography>
                   {!isLoggedIn && <Button color="inherit" onClick={handlerLogin}>Login</Button>}
-                  {isLoggedIn && <Button color="inherit" onClick={handleLogout}>Logout</Button>}
+                  {isLoggedIn && <Button color="inherit" onClick={handleLogout} disabled={isSubmitting}>Logout</Button>}
                </Toolbar>
             </AppBar>
          </div>
          {status === 'loading' && <LinearProgress/>}
-      </ThemeProvider>
+      </>
    );
 };
 

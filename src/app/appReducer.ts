@@ -8,7 +8,7 @@ import {
    SetIsLoggedInActionType,
    setUserData,
    SetUserDataActionType
-} from '../features/SignIn/authReducer';
+} from '../features/authorization/a1-SignIn/authReducer';
 
 enum APP_ACTIONS_TYPE {
    SET_STATUS = 'APP/SET-STATUS',

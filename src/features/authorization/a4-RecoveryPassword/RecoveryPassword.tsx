@@ -1,15 +1,15 @@
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {AppRootStateType} from '../../app/store';
-import {RequestStatusType, setAppError} from '../../app/appReducer';
+import {AppRootStateType} from '../../../app/store';
+import {RequestStatusType, setAppError} from '../../../app/appReducer';
 import {useFormik} from 'formik';
 import {ThemeProvider} from '@material-ui/core/styles';
-import {theme} from '../../utils/theme';
+import {theme} from '../../../utils/theme';
 import {Box, Button, FormControl, FormGroup, FormLabel, Grid, TextField} from '@material-ui/core';
 import {NavLink, Redirect, useParams} from 'react-router-dom';
-import {PATH} from '../Routes/Routes';
-import {RecoveryPasswordSchema} from '../../utils/validators';
-import {recoveryPassword, register} from '../SignIn/authReducer';
+import {PATH} from '../../main/m3-Routes/Routes';
+import {RecoveryPasswordSchema} from '../../../utils/validators';
+import {recoveryPassword, register} from '../a1-SignIn/authReducer';
 
 
 type PropsType = {}
@@ -27,13 +27,14 @@ export const RecoveryPassword: React.FC<PropsType> = React.memo((props) => {
          secondPassword: '',
       },
       validationSchema: RecoveryPasswordSchema,
-      onSubmit: ({firstPassword, secondPassword}) => {
-         //alert(JSON.stringify({firstPassword, secondPassword}, null, 2));
+      onSubmit: async (values, {setSubmitting}) => {
+         const {firstPassword, secondPassword} = values;
 
          if (firstPassword !== secondPassword) {
             dispatch(setAppError('Passwords don\'t match!'))
          } else {
-            token && dispatch(recoveryPassword(firstPassword, token));
+            token && await dispatch(recoveryPassword(firstPassword, token));
+            setSubmitting(false);
          }
       },
    });
@@ -72,7 +73,11 @@ export const RecoveryPassword: React.FC<PropsType> = React.memo((props) => {
                         {formik.touched && formik.errors.secondPassword &&
                         <div style={{color: 'red'}}>{formik.errors.secondPassword}</div>}
 
-                        <Button type={'submit'} variant={'contained'} color={'secondary'} style={{marginTop: '20px'}}>
+                        <Button type={'submit'}
+                                variant={'contained'}
+                                color={'secondary'}
+                                style={{marginTop: '20px'}}
+                                disabled={!formik.isValid || formik.isSubmitting}>
                            Recovery password
                         </Button>
 

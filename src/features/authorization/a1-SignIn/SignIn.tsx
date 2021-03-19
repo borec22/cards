@@ -1,15 +1,15 @@
 import {Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, TextField} from '@material-ui/core';
 import {ThemeProvider} from '@material-ui/core/styles';
 import React from 'react';
-import {theme} from '../../utils/theme';
+import {theme} from '../../../utils/theme';
 import {useFormik} from 'formik';
 import {useDispatch, useSelector} from 'react-redux';
 import {login} from './authReducer';
-import {AppRootStateType} from '../../app/store';
+import {AppRootStateType} from '../../../app/store';
 import {NavLink, Redirect} from 'react-router-dom';
-import {PATH} from '../Routes/Routes';
-import {SignInSchema} from '../../utils/validators';
-import {setAppStatus} from '../../app/appReducer';
+import {PATH} from '../../main/m3-Routes/Routes';
+import {SignInSchema} from '../../../utils/validators';
+import {setAppStatus} from '../../../app/appReducer';
 
 type FormikLoginErrorType = {
    email?: string
@@ -17,7 +17,7 @@ type FormikLoginErrorType = {
 }
 
 export const SignIn = () => {
-   console.log('render SignIn component');
+   console.log('render a1-SignIn component');
    const dispatch = useDispatch();
    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn);
 
@@ -28,13 +28,14 @@ export const SignIn = () => {
          rememberMe: false
       },
       validationSchema: SignInSchema,
-      onSubmit: values => {
-         dispatch(login(values));
+      onSubmit: async (values, {setSubmitting}) => {
+         await dispatch(login(values));
+         setSubmitting(false);
       },
    });
 
    if (isLoggedIn) {
-      return <Redirect to={PATH.PROFILE_PATH}/>
+      return <Redirect to={PATH.PACKS_PATH}/>
    }
 
    return (
@@ -73,7 +74,13 @@ export const SignIn = () => {
                            label={'Remember me'}
                            control={<Checkbox color={'secondary'} {...formik.getFieldProps('rememberMe')}/>}
                         />
-                        <Button type={'submit'} variant={'contained'} color={'secondary'} style={{marginTop: '20px'}}>Sign In</Button>
+                        <Button type={'submit'}
+                                variant={'contained'}
+                                color={'secondary'}
+                                style={{marginTop: '20px'}}
+                                disabled={!formik.isValid || formik.isSubmitting}>
+                           Sign In
+                        </Button>
 
                         <FormLabel style={{marginTop: '20'}}>
                            <Box mt={5}>
