@@ -8,6 +8,7 @@ import {CircularProgress} from '@material-ui/core';
 import {theme} from '../utils/theme';
 import {ThemeProvider} from '@material-ui/core/styles';
 import {Main} from '../features/main/m2-Main/Main';
+import {getCardPacks} from '../features/PacksList/packsReducer';
 
 
 function App() {
@@ -16,9 +17,10 @@ function App() {
 
    useEffect(() => {
       dispatch(initializeApp());
+      dispatch(getCardPacks());
    }, [dispatch])
 
-   if (!isInitialized) {
+   if (!isInitialized ) {
       return (
          <ThemeProvider theme={theme}>
             <div style={{position: 'fixed', top: '30%', textAlign: 'center', width: '100%'}}>

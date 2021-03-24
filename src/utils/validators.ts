@@ -29,3 +29,8 @@ export const RecoveryPasswordSchema = Yup.object().shape({
       .min(7, 'Password must be more than 7 characters')
       .required('Required')
 });
+
+
+export const AddOrEditPackSchema = Yup.object().shape({
+   name: Yup.string().required('Required')
+});

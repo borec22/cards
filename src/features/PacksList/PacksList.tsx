@@ -1,5 +1,6 @@
 import {
-   Button,
+   Box,
+   Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel,
    InputAdornment,
    makeStyles,
    Paper,
@@ -12,18 +13,21 @@ import {
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppRootStateType} from '../../app/store';
-import {Redirect} from 'react-router-dom';
+import {NavLink, Redirect} from 'react-router-dom';
 import {PATH} from '../main/m3-Routes/Routes';
 import {addCardPack, deleteCardPack, getCardPacks, updateCardPack} from './packsReducer';
 import {useTable} from '../../components/useTable/useTable';
-import {PackType} from '../../api/api';
+import {AddOrEditPackDataType, PackType} from '../../api/api';
 import {Search} from '@material-ui/icons';
 import AddIcon from '@material-ui/icons/Add'
 import {ActionButton} from '../../components/ActionButton/ActionButton';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import CloseIcon from '@material-ui/icons/Close';
-import {RequestStatusType} from '../../app/appReducer';
+import {RequestStatusType, setAppStatus} from '../../app/appReducer';
 import {history} from '../../index';
+import {Popup} from '../../components/Dialog/Popup';
+import {PackForm} from './PackForm/PackForm';
+import {setCardsTotalCount} from './CardsList/cardsReducer';
 
 
 const useStyles = makeStyles(theme => ({
@@ -58,14 +62,20 @@ const headCells: HeadCell[] = [
 
 
 export const PacksList = () => {
-   console.log('render PacksList component');
    const classes = useStyles();
 
-   const [searchFn, setSearchFn] = useState({fn: (items: PackType[]) => items});
+   function fn<T>(items: T[]) {
+      return items;
+   }
+
+   const [searchFn, setSearchFn] = useState({fn: fn});
+   const [openPopup, setOpenPopup] = useState(false);
+   const [recordForEdit, setRecordForEdit] = useState<AddOrEditPackDataType | null>(null);
 
    const dispatch = useDispatch();
    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn);
    const status = useSelector<AppRootStateType, RequestStatusType>(state => state.app.status);
+   const cardPacksTotalCount = useSelector<AppRootStateType, number | null>(state => state.packs.cardPacksTotalCount);
 
    const records = useSelector<AppRootStateType, PackType[]>(state => state.packs.cardPacks);
 
@@ -73,7 +83,7 @@ export const PacksList = () => {
 
    useEffect(() => {
       dispatch(getCardPacks());
-   }, [dispatch]);
+   }, [dispatch, cardPacksTotalCount]);
 
 
    if (!isLoggedIn) {
@@ -84,30 +94,33 @@ export const PacksList = () => {
       const target = e.target;
 
       setSearchFn({
-         fn: (items: PackType[]) => {
+         fn: (items) => {
             if (target.value === '') {
                return items;
             }
 
-            return items.filter(item => item.name.toLowerCase().startsWith(target.value));
+            return items.filter(item => Object(item)['name'].toLowerCase().startsWith(target.value));
          }
       });
    }
 
-   const addNewItemHandler = () => {
-      dispatch(addCardPack());
+   const addOrEdit = (packData: AddOrEditPackDataType) => {
+      console.log(packData);
+      if (packData._id) {
+         dispatch(updateCardPack(packData));
+      } else {
+         dispatch(addCardPack(packData));
+      }
+      setOpenPopup(false);
    }
 
-   const editItemHandler = (item: PackType) => {
-      dispatch(updateCardPack(item._id));
+   const deleteItemHandler = (item: {[key: string]: string | number}) => {
+      dispatch(deleteCardPack(Object(item)['id']));
    }
 
-   const deleteItemHandler = (item: PackType) => {
-      dispatch(deleteCardPack(item._id));
-   }
-
-   const handleCardsClick = (item: PackType) => {
+   const handleCardsClick = (item: {[key: string]: string | number}) => {
       history.push(`${PATH.CARDS_PATH}/${item._id}`);
+      dispatch(setCardsTotalCount(+item.cardsCount));
    }
 
    return (
@@ -130,12 +143,17 @@ export const PacksList = () => {
                        disabled={status === 'loading'}
                        color={'secondary'}
                        className={classes.addButton}
-                       onClick={addNewItemHandler}
+                       onClick={
+                          () => {
+                             setOpenPopup(true);
+                             setRecordForEdit(null);
+                          }
+                       }
                > Add New </Button>
             </Toolbar>
             <TblContainer>
                <TblHead/>
-               <TableBody>
+               {cardPacksTotalCount && <TableBody>
                   {
                      recordsAfterPagingAndSorting().map((item) =>
                         (<TableRow key={item._id}>
@@ -145,7 +163,10 @@ export const PacksList = () => {
                            <TableCell>{item.deckCover}</TableCell>
                            <TableCell>
                               <ActionButton color={'primary'}
-                                            onClick={() => editItemHandler(item)}
+                                            onClick={() => {
+                                               setOpenPopup(true);
+                                               setRecordForEdit(item);
+                                            }}
                                             disabled={status === 'loading'}
                               >
                                  <EditOutlinedIcon fontSize="small"/>
@@ -155,7 +176,7 @@ export const PacksList = () => {
                                  onClick={() => deleteItemHandler(item)}
                                  disabled={status === 'loading'}
                               >
-                                 <CloseIcon fontSize="small" />
+                                 <CloseIcon fontSize="small"/>
                               </ActionButton>
                            </TableCell>
                            <TableCell>
@@ -170,10 +191,15 @@ export const PacksList = () => {
                         </TableRow>)
                      )
                   }
-               </TableBody>
+               </TableBody>}
             </TblContainer>
             <TblPaginator/>
          </Paper>
+         <Popup title='Pack Form'
+                openPopup={openPopup}
+                setOpenPopup={setOpenPopup}>
+            <PackForm recordForEdit={recordForEdit} addOrEdit={addOrEdit}/>
+         </Popup>
       </>
    );
 }

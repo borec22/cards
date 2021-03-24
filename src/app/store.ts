@@ -1,4 +1,4 @@
-import {applyMiddleware, createStore } from "redux";
+import {applyMiddleware, compose, createStore } from "redux";
 import { combineReducers } from "redux";
 import thunk from 'redux-thunk';
 import {authReducer} from '../features/authorization/a1-SignIn/authReducer';
@@ -15,7 +15,12 @@ const rootReducer = combineReducers({
 
 export type AppRootStateType = ReturnType<typeof rootReducer>;
 
-// @ts-ignore
+declare global {
+   interface Window {
+      __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
+   }
+}
+
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));

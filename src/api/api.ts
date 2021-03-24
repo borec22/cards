@@ -45,31 +45,31 @@ export const authAPI = {
    }
 }
 export const packsApi = {
-   getPacks() {
+   getPacks(pageCount: number) {
       return instance.get<ResponseGetPacksType>('cards/pack', {
          params: {
-            pageCount: 26
+            pageCount
          }
       })
          .then(response => response.data);
    },
-   updatePack(_id: string, name: string) {
+   updatePack(data: AddOrEditPackDataType) {
       return instance.put<ResponseUpdatePackType>('cards/pack', {
          cardsPack: {
-            _id,
-            name
+            ...data
          }
       })
          .then(response => response.data);
    },
-   createPack() {
+   createPack(data: AddOrEditPackDataType) {
       return instance.post<ResponseCreatePackType>('cards/pack', {
          cardsPack: {
             name: 'new pack added',
             path: '',
             private: false,
             deckCover: '',
-            type: 'pack'
+            type: 'pack',
+            ...data
          }
       })
          .then(response => response.data);
@@ -81,10 +81,11 @@ export const packsApi = {
    }
 }
 export const cardsApi = {
-   getCards(cardsPack_id: string) {
+   getCards(cardsPack_id: string, cardsCount: number) {
       return instance.get<ResponseGetCardsType>('cards/card', {
          params: {
-            cardsPack_id
+            cardsPack_id,
+            pageCount: cardsCount
          }
       })
          .then(response => response.data);
@@ -173,6 +174,24 @@ type UpdateApiCardModelType = {
 type ResponseUpdateCardType = { updatedCard: {} }
 
 // packs_types
+export type AddOrEditPackDataType = {
+   cardsCount?: number
+   created?: string
+   grade?: number
+   deckCover?: string
+   more_id?: string
+   name?: string
+   path?: string
+   rating?: number
+   shots?: number
+   type?: string
+   updated?: string
+   user_id?: string
+   user_name?: string
+   __v?: number
+   _id?: string
+}
+
 export type PackType = {
    cardsCount: number
    created: string

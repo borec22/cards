@@ -23,13 +23,13 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type SearchFn = {
-   fn: (items: PackType[]) =>  PackType[]
+   fn: <T>(items: T[]) => T[]
 }
 
 export const useTable = (
-   records: PackType[],
+   records: {[x: string]: string | number}[],
    headCells: HeadCell[],
-   searchFn: SearchFn
+   searchFn?: SearchFn
 ) => {
    const classes = useStyles();
 
@@ -73,15 +73,6 @@ export const useTable = (
       </TableHead>
    );
 
-   const handleChangePage = (event: unknown, newPage: number) => {
-      setPage(newPage);
-   }
-   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
-   }
-
-
    function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
       if (b[orderBy] < a[orderBy]) {
          return -1;
@@ -114,7 +105,19 @@ export const useTable = (
    }
 
    const recordsAfterPagingAndSorting = () => {
-      return stableSort(searchFn.fn(records), getComparator(order, orderBy)).slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+      return stableSort(
+         searchFn? searchFn.fn(records) : records,
+         getComparator(order, orderBy)).slice(page * rowsPerPage, (page + 1) * rowsPerPage
+      );
+   }
+
+
+   const handleChangePage = (event: unknown, newPage: number) => {
+      setPage(newPage);
+   }
+   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setRowsPerPage(parseInt(event.target.value, 10));
+      setPage(0);
    }
 
    const TblPaginator = () => (<TablePagination
